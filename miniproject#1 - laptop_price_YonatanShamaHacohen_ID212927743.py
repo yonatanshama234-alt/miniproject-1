@@ -7,7 +7,7 @@ import numpy as np
 sns.set(style="whitegrid")
 
 # Using encoding='latin-1' to handle special characters if default utf-8 fails
-file_path = r"C:\Users\asus\OneDrive\Desktop\mini_project\laptop_price - dataset.csv"
+file_path = r"C:\Users\asus\OneDrive\Desktop\miniproject-1\laptop_price - dataset.csv"
 try:
     df = pd.read_csv(file_path, encoding='latin-1')
 except:
@@ -59,21 +59,32 @@ def set_os_category(os_name):
 df['OpSys'] = df['OpSys'].apply(set_os_category)
 print("Unique OpSys after fix:", df['OpSys'].unique())
 
-# Task 5: Plot price distribution for each Operating System type
+# Task 5: Plot price distribution for each Operating System type (Fixed Layout)
+
 unique_os = df['OpSys'].unique()
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(18, 10)) 
-axes = axes.flatten() 
+
+# Change to 1 row, multiple columns, and SHARE the Y-axis
+fig, axes = plt.subplots(nrows=1, ncols=len(unique_os), figsize=(24, 5), sharey=True)
 
 for i, os in enumerate(unique_os):
-    if i < len(axes):
-        subset = df[df['OpSys'] == os]
-        sns.histplot(subset['Price (Euro)'], ax=axes[i], kde=True, color='green')
-        axes[i].set_title(f'Price Dist: {os}')
-        axes[i].set_xlabel('Price (Euro)')
-        axes[i].set_ylabel('Count')
+    subset = df[df['OpSys'] == os]
+    
+    # Plot histogram with KDE
+    # We turn off the y-label for all but the first graph to reduce clutter
+    sns.histplot(subset['Price (Euro)'], ax=axes[i], kde=True)
+    
+    axes[i].set_title(f'Distribution: {os}')
+    axes[i].set_xlabel('Price (Euro)')
+    
+    # Only show Y label on the very first graph
+    if i == 0:
+        axes[i].set_ylabel('Number of Laptops')
+    else:
+        axes[i].set_ylabel('')
 
+plt.suptitle('Price Distribution by OS Category', fontsize=16)
 plt.tight_layout()
-plt.savefig('opsys_distribution.png')
+plt.savefig('opsys_distribution_row.png')
 plt.show()
 
 # Task 6: Relationship between RAM and Price & Outlier Detection
